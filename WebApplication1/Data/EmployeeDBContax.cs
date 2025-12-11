@@ -9,7 +9,7 @@ namespace WebApplication1.Data
         {
             
         }
-        DbSet<Employee> employees { get; set; }
+        public DbSet<Employee> employees { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,7 +35,6 @@ namespace WebApplication1.Data
             //    entity.Property(n => n.Description).IsRequired(false).HasMaxLength(200);
                
             //});
-
 
             modelBuilder.ApplyConfiguration(new EmployeeConfig());
 

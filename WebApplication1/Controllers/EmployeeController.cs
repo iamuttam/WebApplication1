@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using WebApplication1.Data;
 using WebApplication1.Model;
 
 namespace WebApplication1.Controllers
@@ -12,11 +13,13 @@ namespace WebApplication1.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly ILogger<EmployeeController> _logger;
-
-        public EmployeeController(ILogger<EmployeeController> logger)
+        private readonly EmployeeDBContax _employeeDBContax;
+        public EmployeeController(ILogger<EmployeeController> logger, EmployeeDBContax employeeDBContax)
         {
             _logger = logger;
-            
+           _employeeDBContax = employeeDBContax;
+
+
         }
         [HttpGet("All")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -26,7 +29,7 @@ namespace WebApplication1.Controllers
         {
             _logger.LogInformation("Get All Employee Method Started..");
            var employees = new List <EmployeeDTO>();
-            foreach (var item in EmployeeRepository.employees)
+            foreach (var item in _employeeDBContax.employees)
             {
                 EmployeeDTO employeeDTO = new EmployeeDTO()
                 {
@@ -42,7 +45,7 @@ namespace WebApplication1.Controllers
                 employees.Add(employeeDTO);
             }
 
-            var employees1 = EmployeeRepository.employees.Select(e => new EmployeeDTO()
+            var employees1 = _employeeDBContax.employees.Select(e => new EmployeeDTO()
             {
                 EmployeeId = e.EmployeeId,
                 EmployeeName = e.EmployeeName,
@@ -79,10 +82,10 @@ namespace WebApplication1.Controllers
                 _logger.LogWarning("Bad Request..");
                 return BadRequest();
             }
-            int newEMpId = EmployeeRepository.employees.LastOrDefault().EmployeeId + 1;
+            //int newEMpId = _employeeDBContax.employees.LastOrDefault().EmployeeId + 1;
             Employee employee = new Employee
             {
-                EmployeeId = newEMpId,
+                //EmployeeId = newEMpId,
                 EmployeeName = employeeDTO.EmployeeName,
                 Email = employeeDTO.Email,
                 EmployeeAge = employeeDTO.EmployeeAge,
@@ -91,7 +94,8 @@ namespace WebApplication1.Controllers
                 Experience = employeeDTO.Experience,
                 Description = employeeDTO.Description
             };
-            EmployeeRepository.employees.Add(employee);
+            _employeeDBContax.employees.Add(employee);
+            _employeeDBContax.SaveChanges();
             employeeDTO.EmployeeId = employee.EmployeeId;
             return CreatedAtRoute("GetStudentbyId",new{ id = employeeDTO.EmployeeId},employeeDTO);
  
@@ -112,7 +116,7 @@ namespace WebApplication1.Controllers
                 _logger.LogWarning("Bad Request..");
                 return BadRequest();
             }
-            var employees = EmployeeRepository.employees.Where(a => a.EmployeeId == id).FirstOrDefault();
+            var employees = _employeeDBContax.employees.Where(a => a.EmployeeId == id).FirstOrDefault();
             if (employees == null)
             {
                 _logger.LogError("Student Not Found with Given Id.");
@@ -123,11 +127,12 @@ namespace WebApplication1.Controllers
             {
                 EmployeeId= employees.EmployeeId,
                 EmployeeName = employees.EmployeeName,
-                Email = employees.EmployeeName,
+                Email = employees.Email,
                 EmployeeAge = employees.EmployeeAge,
                 Gender = employees.Gender,
                 Experience = employees.Experience,
                 Department = employees.Department,
+                Description = employees.Description,
             };
             
                 return Ok(employeeDTO);
@@ -143,7 +148,7 @@ namespace WebApplication1.Controllers
         {
             if (name == "")
                 return BadRequest();
-            var employees = EmployeeRepository.employees.Where(a => a.EmployeeName == name).FirstOrDefault();
+            var employees = _employeeDBContax.employees.Where(a => a.EmployeeName == name).FirstOrDefault();
             if (employees == null )
                 return NotFound($"The Employee with Name {name} Not found");
             var employeeDTO = new EmployeeDTO
@@ -168,12 +173,18 @@ namespace WebApplication1.Controllers
         {
             if (EmpId <= 0)
                 return BadRequest();
-            var emp = EmployeeRepository.employees.Where(a => a.EmployeeId == EmpId).FirstOrDefault();
-            
+            var emp = _employeeDBContax.employees.Where(a => a.EmployeeId == EmpId).FirstOrDefault();
+
             if (emp == null)
+            {
                 return NotFound($"The Employee with ID {EmpId} Not found");
+            }
             else
-                return Ok(EmployeeRepository.employees.Remove(emp)   );
+            {
+                _employeeDBContax.employees.Remove(emp);
+                _employeeDBContax.SaveChanges();
+                return Ok();
+            }
         }
 
         [HttpPut]
@@ -189,7 +200,7 @@ namespace WebApplication1.Controllers
                 return NotFound();
             }
 
-            var emp = EmployeeRepository.employees.Where(a => a.EmployeeId == model.EmployeeId).FirstOrDefault();
+            var emp = _employeeDBContax.employees.Where(a => a.EmployeeId == model.EmployeeId).FirstOrDefault();
             if(emp == null)
                 return NotFound();
             emp.EmployeeName = model.EmployeeName;
@@ -198,6 +209,7 @@ namespace WebApplication1.Controllers
             emp.Experience = model.Experience;
             emp.Department = model.Department;
             emp.Description = model.Description;
+            _employeeDBContax.SaveChanges();
           return NoContent();
         }
 
@@ -214,7 +226,7 @@ namespace WebApplication1.Controllers
                 return NotFound();
             }
 
-            var emp = EmployeeRepository.employees.Where(a => a.EmployeeId == id).FirstOrDefault();
+            var emp = _employeeDBContax.employees.Where(a => a.EmployeeId == id).FirstOrDefault();
 
             var employeeDTO = new EmployeeDTO
             {
@@ -237,6 +249,7 @@ namespace WebApplication1.Controllers
             emp.Experience = employeeDTO.Experience;
             emp.Department = employeeDTO.Department;
             emp.Description = employeeDTO.Description;
+            _employeeDBContax.SaveChanges();
             return NoContent();
         }
     }

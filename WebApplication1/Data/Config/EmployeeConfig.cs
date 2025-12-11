@@ -7,7 +7,7 @@ namespace WebApplication1.Data.Config
     {
         public void Configure(EntityTypeBuilder<Employee> builder)
         {
-            builder.ToTable("Employee");
+            builder.ToTable("employees");
             builder.HasKey(x=>x.EmployeeId);
             builder.Property(x => x.EmployeeId).UseIdentityColumn();
             builder.Property(n => n.EmployeeName).HasMaxLength(200);
@@ -20,14 +20,14 @@ namespace WebApplication1.Data.Config
             builder.Property(n => n.Description).IsRequired(false).HasMaxLength(200);
 
 
-            builder.HasData(new List<Employee>()
-            {
-                new Employee{EmployeeId = 1, EmployeeName="Uttam", EmployeeAge=29,Gender="M" ,Email="uttam@gmail.com",Department="Development",Experience="5 yrs.",DateofJoining=DateTime.Parse("12/02/2021"),Description="sdhfgyefywefewydfwtdfwtdfwtdrwdf"},
+            //builder.HasData(new List<Employee>()
+            //{
+            //    new Employee{EmployeeId = 1, EmployeeName="Uttam", EmployeeAge=29,Gender="M" ,Email="uttam@gmail.com",Department="Development",Experience="5 yrs.",DateofJoining=DateTime.Parse("12/02/2021"),Description="sdhfgyefywefewydfwtdfwtdfwtdrwdf"},
 
-                new Employee{EmployeeId = 2, EmployeeName="Uttam Kumar", EmployeeAge=29,Gender="M" ,Email="uttam@gmail.com",Department="Development",Experience="5 yrs.",DateofJoining=DateTime.Parse("12/02/2021"),Description="sdhfgyefywefewydfwtdfwtdfwtdrwdf"},
+            //    new Employee{EmployeeId = 2, EmployeeName="Uttam Kumar", EmployeeAge=29,Gender="M" ,Email="uttam@gmail.com",Department="Development",Experience="5 yrs.",DateofJoining=DateTime.Parse("12/02/2021"),Description="sdhfgyefywefewydfwtdfwtdfwtdrwdf"},
 
-                new Employee{EmployeeId = 3, EmployeeName="Uttam singh", EmployeeAge=29,Gender="M" ,Email="uttam@gmail.com",Department="Development",Experience="5 yrs.",DateofJoining=DateTime.Parse("12/02/2021"),Description="sdhfgyefywefewydfwtdfwtdfwtdrwdf"},
-            });
+            //    new Employee{EmployeeId = 3, EmployeeName="Uttam singh", EmployeeAge=29,Gender="M" ,Email="uttam@gmail.com",Department="Development",Experience="5 yrs.",DateofJoining=DateTime.Parse("12/02/2021"),Description="sdhfgyefywefewydfwtdfwtdfwtdrwdf"},
+            //});
 
         }
     }
