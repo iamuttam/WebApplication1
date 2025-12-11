@@ -38,7 +38,10 @@ namespace WebApplication1.Data
 
 
             modelBuilder.ApplyConfiguration(new EmployeeConfig());
-           // modelBuilder.ApplyConfiguration(new TableConfig());
+
+            // modelBuilder.ApplyConfiguration(new TableConfig());
+            //modelBuilder.ApplyConfiguration(new TableConfig());
+            //modelBuilder.ApplyConfiguration(new TableConfig());
         }
     }
 }
