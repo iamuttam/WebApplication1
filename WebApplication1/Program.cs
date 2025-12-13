@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Runtime.Intrinsics.X86;
+using WebApplication1.Configuration;
 using WebApplication1.Data;
 using WebApplication1.Logging;
 
@@ -18,6 +19,9 @@ Log.Logger = new LoggerConfiguration()
 // Use Serilog along with Built in loggers
 builder.Logging.AddSerilog();
 // Add services to the container. 
+
+//Add Auto mapper
+builder.Services.AddAutoMapper(typeof(AutoMapperConfig));
 
 builder.Services.AddDbContext<EmployeeDBContax>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("EmployeeAppDBConnectionString"))
