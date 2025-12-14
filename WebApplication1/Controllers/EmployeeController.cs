@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Azure;
+using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -18,17 +19,19 @@ namespace WebApplication1.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly ILogger<EmployeeController> _logger;
-        private readonly EmployeeDBContax _employeeDBContax;
+        //private readonly EmployeeDBContax _employeeDBContax;
         private readonly IMapper _mapper;
-        private readonly IEmployeeRepository _employeeRepository;
-        public EmployeeController(ILogger<EmployeeController> logger, EmployeeDBContax employeeDBContax, IMapper mapper, IEmployeeRepository employeeRepository)
+        //private readonly IEmployeeRepository _employeeRepository;
+        private  readonly ICompanyRepository<Employee> _employeeRepository;
+        public EmployeeController(ILogger<EmployeeController> logger, /*EmployeeDBContax employeeDBContax,*/ IMapper mapper, ICompanyRepository<Employee> employeeRepository)
         {
             _logger = logger;
-           _employeeDBContax = employeeDBContax;
+          // _employeeDBContax = employeeDBContax;
             _mapper = mapper;
             _employeeRepository = employeeRepository;
 
         }
+
         [HttpGet("All")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -102,8 +105,8 @@ namespace WebApplication1.Controllers
           var EmployeeId=  await _employeeRepository.CreateNewEmployeeAsync(employee_DTO);
 
            // EmployeeDTO employeeDTOData = await _employeeRepository.CreateNewEmployeeAsync(employee);
-            return CreatedAtRoute("GetStudentbyId",new{ id = EmployeeId }, employee_DTO);
- 
+            return CreatedAtRoute("GetStudentbyId",new{ id = employee_DTO.EmployeeId }, employee_DTO);
+            
 
         }
 
@@ -123,7 +126,7 @@ namespace WebApplication1.Controllers
             }
            // var employees = await _employeeDBContax.employees.Where(a => a.EmployeeId == id).FirstOrDefaultAsync();
            
-            var employees = await _employeeRepository.GetEmployeeByIdAsync(id,true);
+            var employees = await _employeeRepository.GetEmployeeByIdAsync(employee => employee.EmployeeId == id);
             if (employees == null)
             {
                 _logger.LogError("Student Not Found with Given Id.");
@@ -157,7 +160,7 @@ namespace WebApplication1.Controllers
             if (name == "")
                 return BadRequest();
             //var employees = await  _employeeDBContax.employees.Where(a => a.EmployeeName == name).FirstOrDefaultAsync();
-            var employees =await _employeeRepository.GetEmployeeByNameAsync(name);
+            var employees =await _employeeRepository.GetEmployeeByNameAsync(student => student.EmployeeName.ToLower().Contains(name));
             if (employees == null )
             return NotFound($"The Employee with Name {name} Not found");
             //var employeeDTO = new EmployeeDTO
@@ -185,7 +188,7 @@ namespace WebApplication1.Controllers
             if (EmpId <= 0)
                 return BadRequest();
             //var emp = await _employeeDBContax.employees.Where(a => a.EmployeeId == EmpId).FirstOrDefaultAsync();
-            var emp = await _employeeRepository.GetEmployeeByIdAsync(EmpId, true);
+            var emp = await _employeeRepository.GetEmployeeByIdAsync(employee=>employee.EmployeeId ==EmpId);
 
             if (emp == null)
             {
@@ -193,7 +196,7 @@ namespace WebApplication1.Controllers
             }
             else
             {
-                await _employeeRepository.DeleteEmployeeAsync(emp.EmployeeId);
+                await _employeeRepository.DeleteEmployeeAsync(emp);
                 return Ok(true);
 
             }
@@ -217,7 +220,7 @@ namespace WebApplication1.Controllers
             // var existingRecord = await _employeeDBContax.employees.AsNoTracking().Where(a => a.EmployeeId == dto.EmployeeId).FirstOrDefaultAsync();
             
             
-            var existingRecord = await _employeeRepository.GetEmployeeByIdAsync(dto.EmployeeId,true);
+            var existingRecord = await _employeeRepository.GetEmployeeByIdAsync(employee =>employee.EmployeeId == dto.EmployeeId);
             if (existingRecord == null)
                 return NotFound();
             //emp.EmployeeName = model.EmployeeName;
@@ -249,7 +252,7 @@ namespace WebApplication1.Controllers
             }
 
             //var existingEmployee = await _employeeDBContax.employees.AsNoTracking().Where(a => a.EmployeeId == id).FirstOrDefaultAsync();
-            var existingEmployee =await _employeeRepository.GetEmployeeByIdAsync(id,true);
+            var existingEmployee =await _employeeRepository.GetEmployeeByIdAsync(employee => employee.EmployeeId == id);
 
             //var employeeDTO = new EmployeeDTO
             //{

@@ -24,17 +24,22 @@ builder.Logging.AddSerilog();
 //Add Auto mapper
 builder.Services.AddAutoMapper(typeof(AutoMapperConfig));
 
-builder.Services.AddDbContext<EmployeeDBContax>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("EmployeeAppDBConnectionString"))
-);
+//builder.Services.AddDbContext<EmployeeDBContax>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("EmployeeAppDBConnectionString"))
+//);
+
+
+builder.Services.AddDbContext<CompanyDBContax>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("EmployeeAppDBConnectionString")));
+
 
 builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<ILogs, LogToServerMemory>();
-builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-
+//builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped(typeof(ICompanyRepository<>), typeof(CompanyRepository<>));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
