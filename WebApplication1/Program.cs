@@ -3,6 +3,7 @@ using Serilog;
 using System.Runtime.Intrinsics.X86;
 using WebApplication1.Configuration;
 using WebApplication1.Data;
+using WebApplication1.Data.Repository;
 using WebApplication1.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +33,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<ILogs, LogToServerMemory>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

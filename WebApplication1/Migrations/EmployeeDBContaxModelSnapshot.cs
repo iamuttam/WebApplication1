@@ -10,7 +10,7 @@ using WebApplication1.Data;
 
 namespace WebApplication1.Migrations
 {
-    [DbContext(typeof(EmployeeDBContax))]
+    [DbContext(typeof(CompanyDBContax))]
     partial class EmployeeDBContaxModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

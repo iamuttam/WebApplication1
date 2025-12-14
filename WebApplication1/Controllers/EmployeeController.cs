@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pag
 using System.Threading;
 using System.Threading.Tasks;
 using WebApplication1.Data;
+using WebApplication1.Data.Repository;
 using WebApplication1.Model;
 
 namespace WebApplication1.Controllers
@@ -19,12 +20,13 @@ namespace WebApplication1.Controllers
         private readonly ILogger<EmployeeController> _logger;
         private readonly EmployeeDBContax _employeeDBContax;
         private readonly IMapper _mapper;
-        public EmployeeController(ILogger<EmployeeController> logger, EmployeeDBContax employeeDBContax, IMapper mapper)
+        private readonly IEmployeeRepository _employeeRepository;
+        public EmployeeController(ILogger<EmployeeController> logger, EmployeeDBContax employeeDBContax, IMapper mapper, IEmployeeRepository employeeRepository)
         {
             _logger = logger;
            _employeeDBContax = employeeDBContax;
             _mapper = mapper;
-
+            _employeeRepository = employeeRepository;
 
         }
         [HttpGet("All")]
@@ -51,7 +53,7 @@ namespace WebApplication1.Controllers
             //    employees.Add(employeeDTO);
             //}
 
-            var employees =await _employeeDBContax.employees.ToListAsync();
+            //var employees =await _employeeDBContax.employees.ToListAsync();
             //var employees = await _employeeDBContax.employees.Select(e => new EmployeeDTO()
             //{
             //    EmployeeId = e.EmployeeId,
@@ -63,6 +65,8 @@ namespace WebApplication1.Controllers
             //    Department = e.Department,
             //    Description = e.Description
             //}).ToListAsync();
+
+            var employees = await _employeeRepository.GetALLEmplooyeeAsync();
 
             var employeeDTOData =  _mapper.Map<List<EmployeeDTO>>(employees);
             return Ok(employeeDTOData);
@@ -92,24 +96,13 @@ namespace WebApplication1.Controllers
                 _logger.LogWarning("Bad Request..");
                 return BadRequest();
             }
-            //int newEMpId = _employeeDBContax.employees.LastOrDefault().EmployeeId + 1;
-            //Employee employee = new Employee
-            //{
-            //    //EmployeeId = newEMpId,
-            //    EmployeeName = employeeDTO.EmployeeName,
-            //    Email = employeeDTO.Email,
-            //    EmployeeAge = employeeDTO.EmployeeAge,
-            //    Gender = employeeDTO.Gender,
-            //    Department = employeeDTO.Department,
-            //    Experience = employeeDTO.Experience,
-            //    Description = employeeDTO.Description
-            //};
+            //int newEMpId = await _employeeRepository.GetEmployeeByIdAsync() + 1;
+            var employee_DTO = _mapper.Map<Employee>(employeeDTO);
 
-            Employee employeeDTOData=_mapper.Map<Employee>(employeeDTO);
-            _employeeDBContax.employees.AddAsync(employeeDTOData);
-            await _employeeDBContax.SaveChangesAsync();
-            employeeDTO.EmployeeId = employeeDTOData.EmployeeId;
-            return CreatedAtRoute("GetStudentbyId",new{ id = employeeDTO.EmployeeId},employeeDTO);
+          var EmployeeId=  await _employeeRepository.CreateNewEmployeeAsync(employee_DTO);
+
+           // EmployeeDTO employeeDTOData = await _employeeRepository.CreateNewEmployeeAsync(employee);
+            return CreatedAtRoute("GetStudentbyId",new{ id = EmployeeId }, employee_DTO);
  
 
         }
@@ -128,7 +121,9 @@ namespace WebApplication1.Controllers
                 _logger.LogWarning("Bad Request..");
                 return BadRequest();
             }
-            var employees = await _employeeDBContax.employees.Where(a => a.EmployeeId == id).FirstOrDefaultAsync();
+           // var employees = await _employeeDBContax.employees.Where(a => a.EmployeeId == id).FirstOrDefaultAsync();
+           
+            var employees = await _employeeRepository.GetEmployeeByIdAsync(id,true);
             if (employees == null)
             {
                 _logger.LogError("Student Not Found with Given Id.");
@@ -161,9 +156,10 @@ namespace WebApplication1.Controllers
         {
             if (name == "")
                 return BadRequest();
-            var employees = await  _employeeDBContax.employees.Where(a => a.EmployeeName == name).FirstOrDefaultAsync();
+            //var employees = await  _employeeDBContax.employees.Where(a => a.EmployeeName == name).FirstOrDefaultAsync();
+            var employees =await _employeeRepository.GetEmployeeByNameAsync(name);
             if (employees == null )
-                return NotFound($"The Employee with Name {name} Not found");
+            return NotFound($"The Employee with Name {name} Not found");
             //var employeeDTO = new EmployeeDTO
             //{
             //    EmployeeId = employees.EmployeeId,
@@ -188,7 +184,8 @@ namespace WebApplication1.Controllers
         {
             if (EmpId <= 0)
                 return BadRequest();
-            var emp = await _employeeDBContax.employees.Where(a => a.EmployeeId == EmpId).FirstOrDefaultAsync();
+            //var emp = await _employeeDBContax.employees.Where(a => a.EmployeeId == EmpId).FirstOrDefaultAsync();
+            var emp = await _employeeRepository.GetEmployeeByIdAsync(EmpId, true);
 
             if (emp == null)
             {
@@ -196,10 +193,12 @@ namespace WebApplication1.Controllers
             }
             else
             {
-                _employeeDBContax.employees.Remove(emp);
-                await _employeeDBContax.SaveChangesAsync();
-                return Ok();
+                await _employeeRepository.DeleteEmployeeAsync(emp.EmployeeId);
+                return Ok(true);
+
             }
+
+           
         }
 
         [HttpPut]
@@ -215,8 +214,11 @@ namespace WebApplication1.Controllers
                 return NotFound();
             }
 
-            var existingRecord = await _employeeDBContax.employees.AsNoTracking().Where(a => a.EmployeeId == dto.EmployeeId).FirstOrDefaultAsync();
-            if(existingRecord == null)
+            // var existingRecord = await _employeeDBContax.employees.AsNoTracking().Where(a => a.EmployeeId == dto.EmployeeId).FirstOrDefaultAsync();
+            
+            
+            var existingRecord = await _employeeRepository.GetEmployeeByIdAsync(dto.EmployeeId,true);
+            if (existingRecord == null)
                 return NotFound();
             //emp.EmployeeName = model.EmployeeName;
             //emp.Email = model.Email;
@@ -226,9 +228,11 @@ namespace WebApplication1.Controllers
             //emp.Description = model.Description;
 
             var newRecord= _mapper.Map<Employee>(dto);
-            _employeeDBContax.Update(newRecord);
-            await _employeeDBContax.SaveChangesAsync();
-          return NoContent();
+            //_employeeDBContax.Update(newRecord);           
+            //await _employeeDBContax.SaveChangesAsync();
+
+            var updateRecord = await _employeeRepository.UpdateEmployeeAsync(newRecord);
+            return NoContent();
         }
 
         [HttpPatch]
@@ -244,7 +248,8 @@ namespace WebApplication1.Controllers
                 return NotFound();
             }
 
-            var existingEmployee = await _employeeDBContax.employees.AsNoTracking().Where(a => a.EmployeeId == id).FirstOrDefaultAsync();
+            //var existingEmployee = await _employeeDBContax.employees.AsNoTracking().Where(a => a.EmployeeId == id).FirstOrDefaultAsync();
+            var existingEmployee =await _employeeRepository.GetEmployeeByIdAsync(id,true);
 
             //var employeeDTO = new EmployeeDTO
             //{
@@ -255,7 +260,7 @@ namespace WebApplication1.Controllers
             //    Experience = emp.Experience,
             //    Department = emp.Department,
             //    Description = emp.Description,
-                
+
             //};
             var employeeDTO = _mapper.Map<EmployeeDTO>(existingEmployee); 
             patchDocument.ApplyTo(employeeDTO,ModelState);
@@ -270,8 +275,9 @@ namespace WebApplication1.Controllers
             //existingEmployee.Description = employeeDTO.Description;
 
             existingEmployee=_mapper.Map<Employee>(employeeDTO);
-            _employeeDBContax.Update(existingEmployee);
-            _employeeDBContax.SaveChangesAsync();
+            //_employeeDBContax.Update(existingEmployee);
+            //_employeeDBContax.SaveChangesAsync();
+            await _employeeRepository.UpdateEmployeeAsync(existingEmployee );
             return NoContent();
         }
     }
