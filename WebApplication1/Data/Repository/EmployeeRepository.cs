@@ -8,92 +8,102 @@ using WebApplication1.Model;
 
 namespace WebApplication1.Data.Repository
 {
-    public class EmployeeRepository : IEmployeeRepository
+    public class EmployeeRepository : CompanyRepository<Employee>, IEmployeeRepository
     {
-        protected readonly EmployeeDBContax _employeeDBContax;
-       
+        //protected readonly EmployeeDBContax _employeeDBContax;
+        protected readonly CompanyDBContax _companyDBContax;
 
-        public EmployeeRepository(EmployeeDBContax employeeDBContax)
+
+        public EmployeeRepository(CompanyDBContax companyDBContax):base(companyDBContax)
         {
-            _employeeDBContax = employeeDBContax;
-        }
-        public async Task<int> CreateNewEmployeeAsync(Employee employee, bool useNotracking = false)
-        {
-           
-            _employeeDBContax.employees.AddAsync(employee);
-            await _employeeDBContax.SaveChangesAsync();
-            return employee.EmployeeId;
+            _companyDBContax = companyDBContax;
         }
 
-        public async Task<bool> DeleteEmployeeAsync(int Id, bool useNotracking = false)
+        public Task<List<Employee>> GetEmployeeByFeeStatusAsync(int Salarystatus)
         {
-            var employeeID = _employeeDBContax.employees.Where(A => A.EmployeeId == Id).FirstOrDefault();
-            if (employeeID != null)
-            {
-                _employeeDBContax.employees.Remove(employeeID);
-                await _employeeDBContax.SaveChangesAsync();
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+
+            //Write code to Return Employee Having Salary pending.
+            return null;
         }
 
-        public async Task<List<Employee>> GetALLEmplooyeeAsync()
-        {
-            var employees = await _employeeDBContax.employees.ToListAsync();
-            return employees;
-        }
+        //Remove All Repository and Will use Common repository
+        //public async Task<int> CreateNewEmployeeAsync(Employee employee, bool useNotracking = false)
+        //{
 
-        public async Task<Employee> GetEmployeeByIdAsync(int Id, bool useNotracking = false)
-        {
-            if (useNotracking == true)
-            {
-                 return  await _employeeDBContax.employees.AsNoTracking().Where(a => a.EmployeeId == Id).FirstOrDefaultAsync();
+        //    _employeeDBContax.employees.AddAsync(employee);
+        //    await _employeeDBContax.SaveChangesAsync();
+        //    return employee.EmployeeId;
+        //}
 
-            }
-            else
-            {
-                 return await _employeeDBContax.employees.Where(a => a.EmployeeId == Id).FirstOrDefaultAsync();
+        //public async Task<bool> DeleteEmployeeAsync(int Id, bool useNotracking = false)
+        //{
+        //    var employeeID = _employeeDBContax.employees.Where(A => A.EmployeeId == Id).FirstOrDefault();
+        //    if (employeeID != null)
+        //    {
+        //        _employeeDBContax.employees.Remove(employeeID);
+        //        await _employeeDBContax.SaveChangesAsync();
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        return false;
+        //    }
+        //}
 
-            }
-            
-        }
+        //public async Task<List<Employee>> GetALLEmplooyeeAsync()
+        //{
+        //    var employees = await _employeeDBContax.employees.ToListAsync();
+        //    return employees;
+        //}
 
-        public async Task<Employee> GetEmployeeByNameAsync(string Name, bool useNotracking = false)
-        {
-            var employees = await _employeeDBContax.employees.Where(a => a.EmployeeName == Name).FirstOrDefaultAsync();
-            return employees;
-        }
+        //public async Task<Employee> GetEmployeeByIdAsync(int Id, bool useNotracking = false)
+        //{
+        //    if (useNotracking == true)
+        //    {
+        //         return  await _employeeDBContax.employees.AsNoTracking().Where(a => a.EmployeeId == Id).FirstOrDefaultAsync();
 
-        public async Task<int> UpdateEmployeeAsync(Employee employee, bool useNotracking = false)
-        {
-            var existingRecord = await _employeeDBContax.employees.AsNoTracking().Where(a => a.EmployeeId == employee.EmployeeId).FirstOrDefaultAsync();
-           
-            
-            if (existingRecord == null)
-            {
-                throw new Exception($"The Employee with ID {employee.EmployeeId} Not found");
-            }
-            else
-            {
-                //existingRecord.EmployeeName = employee.EmployeeName;
-                //existingRecord.Email = employee.Email;
-                //existingRecord.EmployeeAge = employee.EmployeeAge;
-                //existingRecord.Experience = employee.Experience;
-                //existingRecord.DateofJoining = employee.DateofJoining;
-                //existingRecord.Department = employee.Department;
-                //existingRecord.Description = employee.Description;
+        //    }
+        //    else
+        //    {
+        //         return await _employeeDBContax.employees.Where(a => a.EmployeeId == Id).FirstOrDefaultAsync();
+
+        //    }
+
+        //}
+
+        //public async Task<Employee> GetEmployeeByNameAsync(string Name, bool useNotracking = false)
+        //{
+        //    var employees = await _employeeDBContax.employees.Where(a => a.EmployeeName == Name).FirstOrDefaultAsync();
+        //    return employees;
+        //}
+
+        //public async Task<int> UpdateEmployeeAsync(Employee employee, bool useNotracking = false)
+        //{
+        //    var existingRecord = await _employeeDBContax.employees.AsNoTracking().Where(a => a.EmployeeId == employee.EmployeeId).FirstOrDefaultAsync();
 
 
-                _employeeDBContax.Update(employee);
-                await _employeeDBContax.SaveChangesAsync();
-                return existingRecord.EmployeeId;
-                
-            }
+        //    if (existingRecord == null)
+        //    {
+        //        throw new Exception($"The Employee with ID {employee.EmployeeId} Not found");
+        //    }
+        //    else
+        //    {
+        //        //existingRecord.EmployeeName = employee.EmployeeName;
+        //        //existingRecord.Email = employee.Email;
+        //        //existingRecord.EmployeeAge = employee.EmployeeAge;
+        //        //existingRecord.Experience = employee.Experience;
+        //        //existingRecord.DateofJoining = employee.DateofJoining;
+        //        //existingRecord.Department = employee.Department;
+        //        //existingRecord.Description = employee.Description;
 
-        }
-       
+
+        //        _employeeDBContax.Update(employee);
+        //        await _employeeDBContax.SaveChangesAsync();
+        //        return existingRecord.EmployeeId;
+
+        //    }
+
+        //}
+
     }
 }
