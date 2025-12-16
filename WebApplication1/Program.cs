@@ -40,6 +40,36 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ILogs, LogToServerMemory>();
 //builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped(typeof(ICompanyRepository<>), typeof(CompanyRepository<>));
+
+// Add CORS policy
+builder.Services.AddCors(option =>
+{
+    //option.AddDefaultPolicy(policy =>
+    //{
+    //    policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    //});
+    option.AddPolicy("AllowAll", policy =>
+    {
+         //Allow All Origin 
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    });
+    option.AddPolicy("AllowOnlyLocalhost", policy =>
+    {
+        //Allow only local host 
+        policy.WithOrigins("http://localhost:8080").WithHeaders("Accept","sdf","").WithMethods("GET","POST");
+    });
+    option.AddPolicy("AllowOnlygoogle", policy =>
+    {
+        //Allow All google origin 
+        policy.WithOrigins("http://google.com","http://gmail.com","http://googledrive.com").AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    });
+    option.AddPolicy("AllowOnlymicrosoft", policy =>
+    {
+        //Allow All Origin 
+        policy.WithOrigins("http://microsoft.com","http://otlook.com","http://onedrive.com").AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    });
+} );
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -47,6 +77,14 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+//Use Corsfor google
+//app.UseCors("AllowOnlygoogle");
+//Use Cors for default
+//app.UseCors();
+
+//Use Cors for default
+app.UseCors("AllowAll");
 
 app.MapControllers();
 

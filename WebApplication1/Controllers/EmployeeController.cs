@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Azure;
 using Humanizer;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,7 @@ namespace WebApplication1.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [EnableCors(PolicyName = "AllowAll")]
     public class EmployeeController : ControllerBase
     {
         private readonly ILogger<EmployeeController> _logger;

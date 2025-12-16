@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Logging;
 
 namespace WebApplication1.Controllers
 {
     [Route("api/[Controller]")]
     [ApiController]
+    [EnableCors(PolicyName = "AllowOnlymicrosoft")]
     public class StudentController:ControllerBase
     {
         private readonly ILogs _logs;

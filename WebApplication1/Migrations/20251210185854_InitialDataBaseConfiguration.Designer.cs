@@ -11,7 +11,7 @@ using WebApplication1.Data;
 
 namespace WebApplication1.Migrations
 {
-    [DbContext(typeof(EmployeeDBContax))]
+    [DbContext(typeof(CompanyDBContax))]
     [Migration("20251210185854_InitialDataBaseConfiguration")]
     partial class InitialDataBaseConfiguration
     {

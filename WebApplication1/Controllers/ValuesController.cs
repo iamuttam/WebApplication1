@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Logging;
 
@@ -6,6 +7,7 @@ namespace WebApplication1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors(PolicyName = "AllowOnlygoogle")]
     public class ValuesController : ControllerBase
     {
         private readonly ILogs _logs;

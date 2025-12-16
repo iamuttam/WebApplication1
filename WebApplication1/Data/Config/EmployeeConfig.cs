@@ -16,7 +16,7 @@ namespace WebApplication1.Data.Config
             builder.Property(n => n.Gender).IsRequired();
             builder.Property(n => n.DateofJoining).HasMaxLength(200);
             builder.Property(n => n.Experience).IsRequired(false).HasMaxLength(50);
-            builder.Property(n => n.Department).IsRequired(false);
+           // builder.Property(n => n.Department).IsRequired(false);
             builder.Property(n => n.Description).IsRequired(false).HasMaxLength(200);
 
 
@@ -29,6 +29,10 @@ namespace WebApplication1.Data.Config
             //    new Employee{EmployeeId = 3, EmployeeName="Uttam singh", EmployeeAge=29,Gender="M" ,Email="uttam@gmail.com",Department="Development",Experience="5 yrs.",DateofJoining=DateTime.Parse("12/02/2021"),Description="sdhfgyefywefewydfwtdfwtdfwtdrwdf"},
             //});
 
+            builder.HasOne(n => n.Department)
+                   .WithMany(n => n.Employees)
+                   .HasForeignKey(n => n.DepartmentId)
+                   .HasConstraintName("Fk_Employee_Department");
         }
     }
 }

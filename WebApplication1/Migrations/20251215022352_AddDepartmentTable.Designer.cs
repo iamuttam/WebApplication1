@@ -12,8 +12,8 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(CompanyDBContax))]
-    [Migration("20251211154425_ModifymployeeSchema1")]
-    partial class ModifymployeeSchema1
+    [Migration("20251215022352_AddDepartmentTable")]
+    partial class AddDepartmentTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,42 @@ namespace WebApplication1.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("WebApplication1.Data.Department", b =>
+                {
+                    b.Property<int>("DepartmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DepartmentId"));
+
+                    b.Property<string>("DepartmentName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("DepartmentId");
+
+                    b.ToTable("Department", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            DepartmentId = 1,
+                            DepartmentName = "Uttam",
+                            Description = "sdhfgyefywefewydfwtdfwtdfwtdrwdf"
+                        },
+                        new
+                        {
+                            DepartmentId = 2,
+                            DepartmentName = "Development",
+                            Description = "sdhfgyefywefewydfwtdfwtdfwtdrwdf"
+                        });
+                });
 
             modelBuilder.Entity("WebApplication1.Data.Employee", b =>
                 {
@@ -37,8 +73,8 @@ namespace WebApplication1.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Department")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasMaxLength(200)
@@ -68,45 +104,24 @@ namespace WebApplication1.Migrations
 
                     b.HasKey("EmployeeId");
 
-                    b.ToTable("employees");
+                    b.HasIndex("DepartmentId");
 
-                    b.HasData(
-                        new
-                        {
-                            EmployeeId = 1,
-                            DateofJoining = new DateTime(2021, 2, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Department = "Development",
-                            Description = "sdhfgyefywefewydfwtdfwtdfwtdrwdf",
-                            Email = "uttam@gmail.com",
-                            EmployeeAge = 29,
-                            EmployeeName = "Uttam",
-                            Experience = "5 yrs.",
-                            Gender = "M"
-                        },
-                        new
-                        {
-                            EmployeeId = 2,
-                            DateofJoining = new DateTime(2021, 2, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Department = "Development",
-                            Description = "sdhfgyefywefewydfwtdfwtdfwtdrwdf",
-                            Email = "uttam@gmail.com",
-                            EmployeeAge = 29,
-                            EmployeeName = "Uttam Kumar",
-                            Experience = "5 yrs.",
-                            Gender = "M"
-                        },
-                        new
-                        {
-                            EmployeeId = 3,
-                            DateofJoining = new DateTime(2021, 2, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Department = "Development",
-                            Description = "sdhfgyefywefewydfwtdfwtdfwtdrwdf",
-                            Email = "uttam@gmail.com",
-                            EmployeeAge = 29,
-                            EmployeeName = "Uttam singh",
-                            Experience = "5 yrs.",
-                            Gender = "M"
-                        });
+                    b.ToTable("employees", (string)null);
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.Employee", b =>
+                {
+                    b.HasOne("WebApplication1.Data.Department", "Department")
+                        .WithMany("Employees")
+                        .HasForeignKey("DepartmentId")
+                        .HasConstraintName("Fk_Students_Department");
+
+                    b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.Department", b =>
+                {
+                    b.Navigation("Employees");
                 });
 #pragma warning restore 612, 618
         }

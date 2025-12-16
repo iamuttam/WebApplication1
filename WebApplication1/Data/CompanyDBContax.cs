@@ -10,10 +10,12 @@ namespace WebApplication1.Data
             
         }
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<Department> Departments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new EmployeeConfig());
+            modelBuilder.ApplyConfiguration(new DepartmentConfig());
 
         }
     }
