@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Azure;
 using Humanizer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
@@ -17,7 +18,9 @@ namespace WebApplication1.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [EnableCors(PolicyName = "AllowAll")]
+    [EnableCors(PolicyName = "MyTestCors")]
+   // [Authorize(AuthenticationSchemes = "JWTTokenForLocal",Roles ="Superadmin,Adin")]
+    
     public class EmployeeController : ControllerBase
     {
         private readonly ILogger<EmployeeController> _logger;
@@ -37,7 +40,9 @@ namespace WebApplication1.Controllers
         [HttpGet("All")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-       
+
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult< IEnumerable<EmployeeDTO>>> getAllEmployee()
         {
             _logger.LogInformation("Get All Employee Method Started..");
@@ -82,6 +87,8 @@ namespace WebApplication1.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<EmployeeDTO>> CreatemployeeAsync([FromBody]EmployeeDTO employeeDTO)
         {
             if (!ModelState.IsValid)
@@ -119,6 +126,8 @@ namespace WebApplication1.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<EmployeeDTO>> getEmployeeByIdAsync(int id)
         {
             if (id <= 0)
@@ -157,6 +166,8 @@ namespace WebApplication1.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult <EmployeeDTO>> getEmployeeByName(string name)
         {
             if (name == "")
@@ -185,6 +196,8 @@ namespace WebApplication1.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public  async Task<ActionResult<bool>> DeleteEmployeeAsync(int EmpId)
         {
             if (EmpId <= 0)
@@ -212,6 +225,8 @@ namespace WebApplication1.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<EmployeeDTO>> UpdateEmployeeAsync([FromBody] EmployeeDTO dto)
         {
             if(dto == null && dto.EmployeeId  <= 0)
@@ -246,6 +261,8 @@ namespace WebApplication1.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<EmployeeDTO>> UpdateEmployeePartialAsync(int id,[FromBody] JsonPatchDocument<EmployeeDTO> patchDocument)
         {
             if (id == null && id <= 0)

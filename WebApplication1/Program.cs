@@ -41,6 +41,11 @@ builder.Services.AddScoped<ILogs, LogToServerMemory>();
 //builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped(typeof(ICompanyRepository<>), typeof(CompanyRepository<>));
 
+//Added JWT Token
+builder.Services.AddEndpointsApiExplorer();   // Needed for minimal APIs
+builder.Services.AddSwaggerGen();             // Registers ISwaggerProvider
+
+
 // Add CORS policy
 builder.Services.AddCors(option =>
 {
