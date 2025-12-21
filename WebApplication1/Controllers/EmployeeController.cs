@@ -18,8 +18,8 @@ namespace WebApplication1.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [EnableCors(PolicyName = "MyTestCors")]
-   // [Authorize(AuthenticationSchemes = "JWTTokenForLocal",Roles ="Superadmin,Adin")]
+    [EnableCors(PolicyName = "AllowAll")]
+   [Authorize(AuthenticationSchemes = "LoginForLocalUser", Roles ="Superadmin,Admin")]
     
     public class EmployeeController : ControllerBase
     {

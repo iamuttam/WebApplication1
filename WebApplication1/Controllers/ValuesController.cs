@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Cors;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Logging;
@@ -7,7 +8,9 @@ namespace WebApplication1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors(PolicyName = "AllowOnlygoogle")]
+    [EnableCors(PolicyName = "AllowAll")]
+    [Authorize(AuthenticationSchemes = "LoginForGoogleUser", Roles = "Superadmin,Admin")]
+
     public class ValuesController : ControllerBase
     {
         private readonly ILogs _logs;

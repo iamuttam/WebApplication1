@@ -26,16 +26,27 @@ namespace WebApplication1.Controllers
 
             LoginResponseDTO loginResponseDTO = new() { UserName = loginDTO.UserName };
 
+            byte [] Key = null;
+
+            if (loginDTO.Policy == "Local")
+                Key= Encoding.ASCII.GetBytes(_configuration.GetValue<string>("JWTSecretlocalhost"));
+            else if(loginDTO.Policy =="Google")
+                Key= Encoding.ASCII.GetBytes(_configuration.GetValue<string>("JWTSecretgoogle"));
+            else if (loginDTO.Policy == "Microsoft")
+                Key= Encoding.ASCII.GetBytes(_configuration.GetValue<string>("JWTSecretMicrosoft"));
+
             if (loginDTO.UserName == "uttam" && loginDTO.Password == "uttam@123")
             {
-                var Key = Encoding.ASCII.GetBytes(_configuration.GetValue<string>("JWTSecret"));
+               
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var tokenDescriptor = new SecurityTokenDescriptor()
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                    {
                         new Claim(ClaimTypes.Name,loginDTO.UserName),
-                        new Claim(ClaimTypes.Role,"Admin")
+                        new Claim(ClaimTypes.Role,"Admin"),
+                        new Claim(ClaimTypes.Role, "Superadmin")
+
                    }),
                     Expires = DateTime.Now.AddHours(1),
                     SigningCredentials = new(new SymmetricSecurityKey(Key), SecurityAlgorithms.HmacSha512Signature)
