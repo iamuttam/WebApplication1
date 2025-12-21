@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using Serilog;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
@@ -45,7 +47,44 @@ builder.Services.AddScoped(typeof(ICompanyRepository<>), typeof(CompanyRepositor
 
 //Added JWT Token
 builder.Services.AddEndpointsApiExplorer();   // Needed for minimal APIs
-builder.Services.AddSwaggerGen();             // Registers ISwaggerProvider
+
+// Registers ISwaggerProvider
+//builder.Services.AddSwaggerGen();             
+
+// Registers JWT Authentication with Swagger
+builder.Services.AddSwaggerGen();
+
+//builder.Services.AddSwaggerGen(c =>
+//{
+//    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+
+//    // Add JWT Bearer definition
+//    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+//    {
+//        Name = "Authorization",
+//        Type = SecuritySchemeType.Http,
+//        Scheme = "Bearer",
+//        BearerFormat = "JWT",
+//        In = ParameterLocation.Header,
+//        Description = "Enter 'Bearer' followed by your JWT token."
+//    });
+
+//    // Add requirement
+//    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+//    {
+//        {
+//            new OpenApiSecurityScheme
+//            {
+//                Reference = new OpenApiReference
+//                {
+//                    Type = ReferenceType.SecurityScheme,
+//                    Id = "Bearer"
+//                }
+//            },
+//            new string[] {}
+//        }
+//    });
+//});
 
 
 // Add CORS policy
@@ -80,6 +119,13 @@ builder.Services.AddCors(option =>
 var key = Encoding.ASCII.GetBytes(builder.Configuration.GetValue<string>("JWTSecretlocalhost"));
 var JWTSecretgoogle = Encoding.ASCII.GetBytes(builder.Configuration.GetValue<string>("JWTSecretgoogle"));
 var JWTSecretMicrosoft = Encoding.ASCII.GetBytes(builder.Configuration.GetValue<string>("JWTSecretMicrosoft"));
+var GoogleIssuer = builder.Configuration.GetValue<string>("GoogleIssuer");
+var MicrosoftIssuer = builder.Configuration.GetValue<string>("MicorsoftIssuer");
+var LocalIssuer = builder.Configuration.GetValue<string>("LocalIssuer");
+var GoogleAudience = builder.Configuration.GetValue<string>("GoogleAudience");
+var MicrosoftAudience = builder.Configuration.GetValue<string>("MicrosoftAudience");
+var LocalAudience = builder.Configuration.GetValue<string>("LocalAudience");
+
 
 
 //JWT Authentication
@@ -96,8 +142,10 @@ builder.Services.AddAuthentication(option =>
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer=false,
-        ValidateAudience=false,
+        ValidateIssuer = true,
+        ValidIssuer = LocalIssuer,
+        ValidateAudience = true,       
+        ValidAudience = LocalAudience,
         ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha512 } // match your token generation
 
     };
@@ -109,8 +157,10 @@ builder.Services.AddAuthentication(option =>
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(JWTSecretgoogle),
-        ValidateIssuer = false,
-        ValidateAudience = false,
+        ValidateIssuer = true,
+        ValidIssuer =GoogleIssuer,
+        ValidateAudience = true,
+        ValidAudience= LocalAudience,
         ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha512 } // match your token generation
 
     };
@@ -122,8 +172,10 @@ builder.Services.AddAuthentication(option =>
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(JWTSecretMicrosoft),
-        ValidateIssuer = false,
-        ValidateAudience = false,
+        ValidateIssuer = true,
+        ValidIssuer = MicrosoftIssuer,
+        ValidateAudience = true,
+        ValidAudience = MicrosoftAudience,
         ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha512 } // match your token generation
 
     };

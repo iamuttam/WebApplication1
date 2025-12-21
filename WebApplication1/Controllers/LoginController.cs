@@ -27,13 +27,28 @@ namespace WebApplication1.Controllers
             LoginResponseDTO loginResponseDTO = new() { UserName = loginDTO.UserName };
 
             byte [] Key = null;
-
+            string audience = string.Empty;
+            string issuer= string.Empty;
+           
             if (loginDTO.Policy == "Local")
-                Key= Encoding.ASCII.GetBytes(_configuration.GetValue<string>("JWTSecretlocalhost"));
-            else if(loginDTO.Policy =="Google")
-                Key= Encoding.ASCII.GetBytes(_configuration.GetValue<string>("JWTSecretgoogle"));
+            {
+                Key = Encoding.ASCII.GetBytes(_configuration.GetValue<string>("JWTSecretlocalhost"));
+                issuer = _configuration.GetValue<string>("LocalIssuer");
+                audience = _configuration.GetValue<string>("LocalAudience");
+            }
+            else if (loginDTO.Policy == "Google")
+            {
+
+                Key = Encoding.ASCII.GetBytes(_configuration.GetValue<string>("JWTSecretgoogle"));
+                issuer = _configuration.GetValue<string>("GoogleIssuer");
+                audience = _configuration.GetValue<string>("GoogleAudience");
+            }
             else if (loginDTO.Policy == "Microsoft")
-                Key= Encoding.ASCII.GetBytes(_configuration.GetValue<string>("JWTSecretMicrosoft"));
+            {
+                Key = Encoding.ASCII.GetBytes(_configuration.GetValue<string>("JWTSecretMicrosoft"));
+                issuer = _configuration.GetValue<string>("MicorsoftIssuer");
+                audience = _configuration.GetValue<string>("MicrosoftAudience");
+            }
 
             if (loginDTO.UserName == "uttam" && loginDTO.Password == "uttam@123")
             {
@@ -41,6 +56,8 @@ namespace WebApplication1.Controllers
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var tokenDescriptor = new SecurityTokenDescriptor()
                 {
+                    Issuer = issuer,
+                    Audience = audience,
                     Subject = new ClaimsIdentity(new Claim[]
                    {
                         new Claim(ClaimTypes.Name,loginDTO.UserName),

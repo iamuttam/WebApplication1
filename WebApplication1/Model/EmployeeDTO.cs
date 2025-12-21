@@ -19,8 +19,8 @@ namespace WebApplication1.Model
         public int EmployeeAge { get; set; }
         [Required(ErrorMessage = "Please Enter Gender.")]
         public string Gender { get; set; }
-        [Required(ErrorMessage = "Please Enter Employee Department.")]
-        public string Department { get; set; }
+        //[Required(ErrorMessage = "Please Enter Employee Department.")]
+        //public string Department { get; set; }
         [Required(ErrorMessage = "Please Enter Employee Experience.")]
         public string Experience { get; set; }        
         public string Description { get; set; }
