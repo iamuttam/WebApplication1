@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,11 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(CompanyDBContax))]
-    partial class EmployeeDBContaxModelSnapshot : ModelSnapshot
+    [Migration("20251222165811_AddingRecordinUserTypeTable")]
+    partial class AddingRecordinUserTypeTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -215,8 +218,6 @@ namespace WebApplication1.Migrations
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("UserTypeId");
-
                     b.ToTable("Users", (string)null);
                 });
 
@@ -309,18 +310,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.User", b =>
-                {
-                    b.HasOne("WebApplication1.Data.UserType", "UserTypes")
-                        .WithMany("User")
-                        .HasForeignKey("UserTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("Fk_Users_UserTypes");
-
-                    b.Navigation("UserTypes");
-                });
-
             modelBuilder.Entity("WebApplication1.Data.UserRoleMapping", b =>
                 {
                     b.HasOne("WebApplication1.Data.Role", "Role")
@@ -357,11 +346,6 @@ namespace WebApplication1.Migrations
             modelBuilder.Entity("WebApplication1.Data.User", b =>
                 {
                     b.Navigation("UserRoleMappings");
-                });
-
-            modelBuilder.Entity("WebApplication1.Data.UserType", b =>
-                {
-                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

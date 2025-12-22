@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,11 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(CompanyDBContax))]
-    partial class EmployeeDBContaxModelSnapshot : ModelSnapshot
+    [Migration("20251221174258_CreatingRolePrivilegeRole")]
+    partial class CreatingRolePrivilegeRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -179,11 +182,11 @@ namespace WebApplication1.Migrations
 
             modelBuilder.Entity("WebApplication1.Data.User", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("UseId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UseId"));
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
@@ -197,8 +200,9 @@ namespace WebApplication1.Migrations
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserTypeId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -213,78 +217,9 @@ namespace WebApplication1.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId");
-
-                    b.HasIndex("UserTypeId");
+                    b.HasKey("UseId");
 
                     b.ToTable("Users", (string)null);
-                });
-
-            modelBuilder.Entity("WebApplication1.Data.UserRoleMapping", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex(new[] { "RoleId", "UserId" }, "UK_UserRoleMapping")
-                        .IsUnique();
-
-                    b.ToTable("UserRoleMapping", (string)null);
-                });
-
-            modelBuilder.Entity("WebApplication1.Data.UserType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UserType", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "For Developer",
-                            Name = "Developer"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "For HR",
-                            Name = "HR"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "For VP",
-                            Name = "Vice Presedent"
-                        });
                 });
 
             modelBuilder.Entity("WebApplication1.Data.Employee", b =>
@@ -309,39 +244,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.User", b =>
-                {
-                    b.HasOne("WebApplication1.Data.UserType", "UserTypes")
-                        .WithMany("User")
-                        .HasForeignKey("UserTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("Fk_Users_UserTypes");
-
-                    b.Navigation("UserTypes");
-                });
-
-            modelBuilder.Entity("WebApplication1.Data.UserRoleMapping", b =>
-                {
-                    b.HasOne("WebApplication1.Data.Role", "Role")
-                        .WithMany("UserRoleMappings")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("Fk_UserRoleMapping_Role");
-
-                    b.HasOne("WebApplication1.Data.User", "User")
-                        .WithMany("UserRoleMappings")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("Fk_UserRoleMapping_User");
-
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("WebApplication1.Data.Department", b =>
                 {
                     b.Navigation("Employees");
@@ -350,18 +252,6 @@ namespace WebApplication1.Migrations
             modelBuilder.Entity("WebApplication1.Data.Role", b =>
                 {
                     b.Navigation("RolePrivilege");
-
-                    b.Navigation("UserRoleMappings");
-                });
-
-            modelBuilder.Entity("WebApplication1.Data.User", b =>
-                {
-                    b.Navigation("UserRoleMappings");
-                });
-
-            modelBuilder.Entity("WebApplication1.Data.UserType", b =>
-                {
-                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }
