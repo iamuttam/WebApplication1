@@ -215,10 +215,10 @@ app.UseEndpoints(endpoint =>
         context => context.Response.WriteAsync(builder.Configuration.GetValue<string>("JWTSecret")));
 
 });
-if (app.Environment.IsDevelopment())
-{
+// if (app.Environment.IsDevelopment())
+// {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+// }
 
 app.Run();
